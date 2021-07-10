@@ -135,7 +135,7 @@ namespace ds.enovia.service
 
         private async Task<CsrfTokenCache> GetNewTokenCache()
         {
-            HttpResponseMessage tokenResponse = await SendGetCsrfTokenRequestAsync();
+            HttpResponseMessage tokenResponse = await GetAsync(CSRF_TOKEN);
 
             if (tokenResponse.StatusCode != HttpStatusCode.OK)
                 throw new Exception(String.Format("Error getting 3DSpace CSRF token ({0}) ", tokenResponse.StatusCode));
@@ -149,10 +149,6 @@ namespace ds.enovia.service
             return tokenCache;
         }
 
-        private async Task<HttpResponseMessage> SendGetCsrfTokenRequestAsync()
-        {
-            return await GetAsync(GetEndpointURL(CSRF_TOKEN));
-        }
         #endregion
 
         public async Task<HttpResponseMessage> GetAsync(string _endpoint, IDictionary<string, string> _queryParameters = null, IDictionary<string, string> _headers = null, bool _requiresCsrfToken = false, bool _useCsrfCache = true)
