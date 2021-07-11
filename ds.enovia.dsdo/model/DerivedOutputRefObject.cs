@@ -6,10 +6,10 @@ namespace ds.enovia.dsdo.model
     {
         public PartDerivedOutputRefObject(string _ownerId)
         {
-            source = "3DSpace";
+            source = "$3DSpace";
             type = "VPMReference";
             id = _ownerId;
-            relativePath = $"resource/v1/dsxcad/dsxcad:Part/{_ownerId}";
+            relativePath = $"/resources/v1/modeler/dsxcad/dsxcad:Part/{_ownerId}";
         }
     }
 
@@ -17,10 +17,10 @@ namespace ds.enovia.dsdo.model
     {
         public DrawingDerivedOutputRefObject(string _ownerId)
         {
-            source = "3DSpace";
+            source = "$3DSpace";
             type = "Drawing";
             id = _ownerId;
-            relativePath = $"resource/v1/dsxcad/dsxcad:Drawing/{_ownerId}";
+            relativePath = $"/resources/v1/modeler/dsxcad/dsxcad:Drawing/{_ownerId}";
         }
     }
 }
