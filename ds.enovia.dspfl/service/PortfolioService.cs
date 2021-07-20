@@ -23,6 +23,7 @@ using ds.enovia.service;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ds.enovia.dspfl.service
@@ -206,10 +207,33 @@ namespace ds.enovia.dspfl.service
         #endregion
 
         #region dspfl:ProductConfiguration
+
+        public async Task<NlsLabeledItemSet<ProductConfiguration>> CreateProductConfiguration(string _modelVersionId, ProductConfigurationCreate _productConfigurationCreate)
+        {
+            string productConfigurationUri = string.Format("{0}{1}/{2}{3}", GetBaseResource(), MODEL_VERSION, _modelVersionId, PRODUCT_CONFIGURATION);
+
+            //masks
+            //dsmvpfl:ProductConfigurationBaseMask, dsmvpfl:ProductConfigurationCriteriaMask
+            ProductConfigurationCreateItems createItems = new ProductConfigurationCreateItems();
+            createItems.items.Add(_productConfigurationCreate);
+
+            string payload = JsonSerializer.Serialize(createItems);
+
+            HttpResponseMessage requestResponse = await PostAsync(productConfigurationUri, null, null, payload);
+
+            if (requestResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                //handle according to established exception policy
+                throw (new PortfolioResponseException(requestResponse));
+            }
+
+            return await requestResponse.Content.ReadFromJsonAsync<NlsLabeledItemSet<ProductConfiguration>>();
+        }
+
         // Get details of all Product Configurations of given Model Version
         public async Task<NlsLabeledItemSet<ProductConfiguration>> GetAllProductConfigurations(string _modelVersionId)
         {
-            string getAllProductConfigurations = string.Format("{0}{1}{2}{3}", GetBaseResource(), MODEL_VERSION, _modelVersionId, PRODUCT_CONFIGURATION);
+            string getAllProductConfigurations = string.Format("{0}{1}/{2}{3}", GetBaseResource(), MODEL_VERSION, _modelVersionId, PRODUCT_CONFIGURATION);
 
             //masks
             //dsmvpfl:ProductConfigurationBaseMask, dsmvpfl:ProductConfigurationCriteriaMask
