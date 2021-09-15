@@ -14,30 +14,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //------------------------------------------------------------------------------------------------------------------------------------
 
+using ds.enovia.common.model;
 using System.Text.Json.Serialization;
 
 namespace ds.enovia.dsxcad.model
 {
-    public class xCADDrawing
+    public class xCADDrawing : Item
     {
-        public string name { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public string id { get; set; }
-        public string type { get; set; }
-        public string modified { get; set; }
-        public string created { get; set; }
-        public string revision { get; set; }
-        public string state { get; set; }
-        public string owner { get; set; }
-        public string organization { get; set; }
-        public string collabspace { get; set; }
-        public string cestamp { get; set; }
-
         [JsonPropertyName("dsxcad:xCADAttributes")]
         public DSXCadXCadAttributes xCADAttributes;
 
         [JsonPropertyName("dseno:EnterpriseAttributes")]
         public DSEnoEnterpriseAttributes EnterpriseAttributes;
+
+        [JsonPropertyName("dsxcad:AuthoringFile")]
+        public AuthoringFile AuthoringFile;
+
+        [JsonPropertyName("dsxcad:VisualizationFile")]
+        public VisualizationFile VisualizationFile;
     }
 }

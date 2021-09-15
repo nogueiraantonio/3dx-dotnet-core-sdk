@@ -14,18 +14,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //------------------------------------------------------------------------------------------------------------------------------------
 
-using ds.enovia.common;
-using System.Text.Json.Serialization;
-
 namespace ds.enovia.dsxcad.model
 {
-    public class xCADDrawingPatchAttributes : SerializableJsonObject
+    public class VisualizationFile : dsxCADFile
     {
-        public string title { get; set; }
-        public string description { get; set; }
-        public string cestamp { get; set; }
-
-        [JsonPropertyName("dseno:EnterpriseAttributes")]
-        public DSEnoEnterpriseAttributes EnterpriseAttributes { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//------------------------------------------------------------------------------------------------------------------------------------
-// Copyright 2021 Dassault Systèmes - CPE EMED
+// Copyright 2020 Dassault Systèmes - CPE EMED
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
 // files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify,
@@ -14,18 +14,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //------------------------------------------------------------------------------------------------------------------------------------
 
-using ds.enovia.common;
-using System.Text.Json.Serialization;
+using ds.enovia.common.exception;
+using System.Net.Http;
 
-namespace ds.enovia.dsxcad.model
+namespace ds.enovia.dsxcad.exception
 {
-    public class xCADDrawingPatchAttributes : SerializableJsonObject
+    public class GetXCADPartException : ResponseException
     {
-        public string title { get; set; }
-        public string description { get; set; }
-        public string cestamp { get; set; }
-
-        [JsonPropertyName("dseno:EnterpriseAttributes")]
-        public DSEnoEnterpriseAttributes EnterpriseAttributes { get; set; }
+        public GetXCADPartException(HttpResponseMessage _response) : base(_response)
+        {
+        }
     }
 }

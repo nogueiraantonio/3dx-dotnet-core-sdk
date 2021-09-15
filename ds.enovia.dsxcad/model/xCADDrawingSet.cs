@@ -14,14 +14,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //------------------------------------------------------------------------------------------------------------------------------------
 
-using ds.enovia.common;
+using ds.enovia.common.collection;
 using System.Collections.Generic;
 
 namespace ds.enovia.dsxcad.model
 {
-    public class xCADDrawingSet : SerializableJsonObject
+    public class xCADDrawingSet : ItemSet<xCADDrawing>
     {
-        public long totalItems;
-        public List<xCADDrawing> member;
+        
     }
 }

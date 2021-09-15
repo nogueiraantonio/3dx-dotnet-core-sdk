@@ -15,41 +15,50 @@
 //------------------------------------------------------------------------------------------------------------------------------------
 
 using ds.authentication;
-using ds.enovia.dsxcad;
+using ds.enovia.common.search;
 using ds.enovia.dsxcad.exception;
 using ds.enovia.dsxcad.model;
 using ds.enovia.service;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace ds.enovia.dslc.changeaction.service
+namespace ds.enovia.dsxcad.service
 {
-    public class xCADDrawingServices : EnoviaBaseService
+    public enum xCADDrawingDetails
+    {
+        Basic,
+        Details,
+        EnterpriseDetails
+    }
+
+    public class xCADDrawingService : xCADDesignIntegrationService
     {        
         private const string BASE_RESOURCE = "/resources/v1/modeler/dsxcad/dsxcad:Drawing";
         private const string SEARCH = "/search";
-      
-        public string GetBaseResource()
+
+        public override string GetBaseResource()
         {
             return BASE_RESOURCE;
         }
 
-        public xCADDrawingServices(string _enoviaService, IPassportAuthentication passport) : base(_enoviaService, passport)
+        public xCADDrawingService(string _enoviaService, IPassportAuthentication passport) : base(_enoviaService, passport)
         {
 
         }
 
-        public async Task<xCADDrawing> GetXCADDrawing(string _id, bool _details = true)
+
+        public async Task<xCADDrawing> GetXCADDrawing(string _id, xCADDrawingDetails _details = xCADDrawingDetails.Basic)
         {
             string getXCADDrawingEndpoint = string.Format("{0}/{1}", GetBaseResource(), _id);
 
-            Dictionary<string, string> queryParams = null;
-            if (_details)
+            Dictionary<string, string> queryParams = new Dictionary<string, string>();
+
+            if (_details != default(xCADDrawingDetails))
             {
-                queryParams = new Dictionary<string, string>();
-                queryParams.Add("$mask", "dsmvxcad:xCADDrawingMask.EnterpriseDetails");
+                queryParams.Add("$mask", GetMaskString(_details));
             }
 
             HttpResponseMessage requestResponse = await GetAsync(getXCADDrawingEndpoint, queryParams);
@@ -68,6 +77,41 @@ namespace ds.enovia.dslc.changeaction.service
             }
 
             return null;
+        }
+
+        public async Task DownloadAuthoringFile(string _dwgId, string _downloadLocation)
+        {
+            FileDownloadTicket fileDownloadTicket = await GetAuthoringFileDownloadTicket(GetBaseResource(), _dwgId);
+
+            if (fileDownloadTicket == null)
+                throw new Exception($"unknown error getting download ticket for authoring file of Drawing with id='{_dwgId}'");
+
+            await DownloadFile(fileDownloadTicket, _downloadLocation);
+
+            return;
+        }
+
+        private string GetMaskString(xCADDrawingDetails _details)
+        {
+            string __mask = "dsmvxcad:xCADDrawingMask.Basic";
+
+            switch (_details)
+            {
+                case xCADDrawingDetails.Details:
+                    __mask = "dsmvxcad:xCADDrawingMask.Details";
+                    break;
+
+                case xCADDrawingDetails.EnterpriseDetails:
+                    __mask = "dsmvxcad:xCADDrawingMask.EnterpriseDetails";
+                    break;
+            }
+
+            return __mask;
+        }
+
+        public async Task<xCADDrawingSet> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADDrawingDetails _mask = xCADDrawingDetails.Basic) 
+        {
+            return await _Search<xCADDrawingSet>(_searchString, GetMaskString(_mask), _skip, _top);
         }
 
         //Modifies the Drawing attributes
