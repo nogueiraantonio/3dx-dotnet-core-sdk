@@ -97,7 +97,7 @@ namespace ds.enovia.dsxcad.service
 
             using (var writer = File.OpenWrite(downloadFile))
             {
-                using (HttpClient downloadClient = new HttpClient(this.BaseClientHandler))
+                using (HttpClient downloadClient = new HttpClient(new HttpClientHandler()))
                 {
                     using (HttpResponseMessage res = await downloadClient.GetAsync(downloadUrl))
                     using (Stream streamToReadFrom = await res.Content.ReadAsStreamAsync())
