@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -76,16 +77,14 @@ namespace ds.enovia.dsxcad.service
             return null;
         }
 
-        public async Task DownloadAuthoringFile(string _familyRepId, string _downloadLocation)
+        public async Task<FileInfo> DownloadAuthoringFile(string _familyRepId, string _downloadLocation)
         {
             FileDownloadTicket fileDownloadTicket = await GetAuthoringFileDownloadTicket(GetBaseResource(), _familyRepId);
         
             if (fileDownloadTicket == null)
                 throw new Exception($"unknown error getting download ticket for authoring file of XCAD Family Representation with id='{_familyRepId}'");
 
-            await DownloadFile(fileDownloadTicket, _downloadLocation);
-
-            return;
+            return await DownloadFile(fileDownloadTicket, _downloadLocation);
         }
 
         private string GetMaskString(xCADFamilyRepresentationDetails _details)

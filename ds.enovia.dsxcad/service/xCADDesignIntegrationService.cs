@@ -84,7 +84,7 @@ namespace ds.enovia.dsxcad.service
             return await requestResponse.Content.ReadFromJsonAsync<FileDownloadTicket>();
         }
 
-        protected async Task DownloadFile(FileDownloadTicket _ticket, string _downloadLocation)
+        protected async Task<FileInfo> DownloadFile(FileDownloadTicket _ticket, string _downloadLocation)
         {
             string filename = _ticket.filename;
 
@@ -106,6 +106,8 @@ namespace ds.enovia.dsxcad.service
                     }
                 }
             }
+
+            return new FileInfo(downloadFile);
         }
     }
 }
