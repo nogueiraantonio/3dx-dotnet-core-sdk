@@ -84,7 +84,7 @@ namespace ds.enovia.dsxcad.service
             return await requestResponse.Content.ReadFromJsonAsync<FileDownloadTicket>();
         }
 
-        protected async Task<FileInfo> DownloadFile(FileDownloadTicket _ticket, string _downloadLocation)
+        protected async Task<FileInfo> DownloadFile(FileDownloadTicket _ticket, string _downloadLocation, long _timeOutSecs = 100)
         {
             string filename = _ticket.filename;
 
@@ -99,6 +99,8 @@ namespace ds.enovia.dsxcad.service
             {
                 using (HttpClient downloadClient = new HttpClient(new HttpClientHandler()))
                 {
+                    downloadClient.Timeout = System.TimeSpan.FromSeconds(_timeOutSecs);
+
                     using (HttpResponseMessage res = await downloadClient.GetAsync(downloadUrl))
                     using (Stream streamToReadFrom = await res.Content.ReadAsStreamAsync())
                     {
