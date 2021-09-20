@@ -67,7 +67,7 @@ namespace ds.enovia.document.service
             return await _Search(_searchString.GetSearchString());
         }
 
-        public async Task<DocumentResponse<DocumentCreated>> CreateDocument(string _title, string _description,  string _fileLocalPath, string _collabSpace = null, string _documentType = null)
+        public async Task<DocumentResponse<DocumentCreated>> CreateDocument(string _title, string _description, string _fileLocalPath, string _collabSpace = null, string _documentType = null)
         {
             //TODO: Check that the _fileLocalPath exists and the process has read permissions
 
@@ -110,6 +110,22 @@ namespace ds.enovia.document.service
             docData = AddFileToDocument(docData, filename, uploadFileReceipt);
 
             return await CreateDocumentAsAttachment(docData, _parentId);
+        }
+
+
+        public async Task<DocumentResponse<Document>> GetDocument(string _docId)
+        {
+            string getDocument = $"{GetBaseResource()}/{_docId}";
+
+            HttpResponseMessage requestResponse = await GetAsync(getDocument);
+
+            if (requestResponse.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                //handle according to established exception policy
+                throw (new GetDocumentsFromParentException(requestResponse));
+            }
+
+            return await requestResponse.Content.ReadFromJsonAsync<DocumentResponse<Document>>();
         }
 
         public async Task<DocumentResponse<Document>> GetAttachedDocuments(string _parentId)
@@ -175,7 +191,8 @@ namespace ds.enovia.document.service
 
                 //var downloadDataReturn = m_client.DownloadData(request);
 
-                using (HttpClient downloadClient = new HttpClient(BaseClientHandler))
+                //THIS NEEDS TO BE CHANGED - check using a static httpclient or IHttpClientFactory (include timeout)
+                using (HttpClient downloadClient = new HttpClient(new HttpClientHandler()))
                 {
                     using (HttpResponseMessage res = await downloadClient.GetAsync(ticketResponse.data[0].dataelements.ticketURL))
                     using (Stream streamToReadFrom = await res.Content.ReadAsStreamAsync())
@@ -187,6 +204,47 @@ namespace ds.enovia.document.service
             }
 
             return true;
+        }
+        public async Task<FileInfo> DownloadFileFromDocument(HttpClient _downloadHttpClient, string _documentPId, string _fileId, string _downloadLocation)
+        {
+            //Get Download Ticket
+            string endpoint = string.Format("{0}/{1}{2}/{3}{4}", GetBaseResource(), _documentPId, FILES, _fileId, DOWNLOAD_TICKET);
+
+            HttpResponseMessage response = await PutAsync(endpoint);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                //handle according to established exception policy
+                throw (new DownloadTicketException(response));
+            }
+
+            TicketResponse<FileDownloadTicketData> ticketResponse =
+                await response.Content.ReadFromJsonAsync<TicketResponse<FileDownloadTicketData>>();
+
+            string filename = ticketResponse.data[0].dataelements.fileName;
+
+            if (!_downloadLocation.EndsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
+            {
+                _downloadLocation += System.IO.Path.DirectorySeparatorChar.ToString();
+            }
+
+            string downloadFile = string.Format("{0}{1}", _downloadLocation, filename);
+
+            string downloadUrl = ticketResponse.data[0].dataelements.ticketURL;
+
+            HttpResponseMessage res = await _downloadHttpClient.GetAsync(downloadUrl);
+
+            using (var writer = File.OpenWrite(downloadFile))
+            {
+                using (Stream streamToReadFrom = await res.Content.ReadAsStreamAsync())
+                {
+                    streamToReadFrom.CopyTo(writer);
+                }
+                //}
+            }
+
+            return new FileInfo(downloadFile);
+
         }
         #endregion
 
@@ -243,7 +301,7 @@ namespace ds.enovia.document.service
                 throw (new GetDocumentsFromParentException(requestResponse));
             }
 
-            return await requestResponse.Content.ReadFromJsonAsync<DocumentResponse<Document>>();            
+            return await requestResponse.Content.ReadFromJsonAsync<DocumentResponse<Document>>();
         }
 
         private async Task<DocumentResponse<DocumentCreated>> CreateDocumentAsAttachment(DocumentDataCreate _docData, string _parentId)
@@ -255,7 +313,7 @@ namespace ds.enovia.document.service
             return await CreateConnectedDocument(_docData, _parentId, SOURCE, SPECIFICATION);
         }
 
-        private DocumentDataCreate InitializeDocument(string _title, string _description, string _collabSpace = null, string _type=null)
+        private DocumentDataCreate InitializeDocument(string _title, string _description, string _collabSpace = null, string _type = null)
         {
             DocumentDataCreate _docData = new DocumentDataCreate();
             _docData.dataelements.title = _title;
@@ -315,7 +373,7 @@ namespace ds.enovia.document.service
                 throw (new CreateDocumentException(createDocumentResponse));
             }
 
-            return await createDocumentResponse.Content.ReadFromJsonAsync<DocumentResponse<DocumentCreated>>();            
+            return await createDocumentResponse.Content.ReadFromJsonAsync<DocumentResponse<DocumentCreated>>();
         }
 
         private async Task<string> UploadFile(string _fileLocalPath)
@@ -369,7 +427,7 @@ namespace ds.enovia.document.service
             //    //handle according to established exception policy
             //    throw (new UploadFileException(requestResponse));
             //}
-           
+
             if (__receipt.EndsWith("\n"))
             {
                 __receipt = __receipt.Substring(0, __receipt.Length - 1);
