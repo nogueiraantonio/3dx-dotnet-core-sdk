@@ -82,14 +82,14 @@ namespace ds.enovia.dsxcad.service
         }
 
  
-        public async Task DownloadAuthoringFile(string _partId, string _downloadLocation)
+        public async Task DownloadAuthoringFile(HttpClient _downloadHttpClient, string _partId, string _downloadLocation)
         {
             FileDownloadTicket fileDownloadTicket = await GetAuthoringFileDownloadTicket(GetBaseResource(), _partId);
         
             if (fileDownloadTicket == null)
                 throw new Exception($"unknown error getting download ticket for authoring file of Part with id='{_partId}'");
 
-            await DownloadFile(fileDownloadTicket, _downloadLocation);
+            await DownloadFile(_downloadHttpClient, fileDownloadTicket, _downloadLocation);
 
             return;
         }

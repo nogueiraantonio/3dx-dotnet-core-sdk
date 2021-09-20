@@ -36,7 +36,6 @@ namespace ds.enovia.dsxcad.service
 
         public xCADDesignIntegrationService(string _enoviaService, IPassportAuthentication passport) : base(_enoviaService, passport)
         {
-
         }
 
         public abstract string GetBaseResource();
@@ -65,10 +64,6 @@ namespace ds.enovia.dsxcad.service
 
             return await requestResponse.Content.ReadFromJsonAsync<T>();
         }
-
-
-
-
         protected async Task<FileDownloadTicket> GetAuthoringFileDownloadTicket(string _baseDownloadUrl, string _id)
         {
             string downloadTicketResource = string.Format(_baseDownloadUrl + DOWNLOAD_TICKET, _id);
@@ -84,7 +79,7 @@ namespace ds.enovia.dsxcad.service
             return await requestResponse.Content.ReadFromJsonAsync<FileDownloadTicket>();
         }
 
-        protected async Task<FileInfo> DownloadFile(FileDownloadTicket _ticket, string _downloadLocation, long _timeOutSecs = 100)
+        protected async Task<FileInfo> DownloadFile(HttpClient _downloadHttpClient, FileDownloadTicket _ticket, string _downloadLocation)
         {
             string filename = _ticket.filename;
 
@@ -95,18 +90,15 @@ namespace ds.enovia.dsxcad.service
             if (File.Exists(downloadFile))
                 File.Delete(downloadFile);
 
+           HttpResponseMessage res = await _downloadHttpClient.GetAsync(downloadUrl);
+            
             using (var writer = File.OpenWrite(downloadFile))
             {
-                using (HttpClient downloadClient = new HttpClient(new HttpClientHandler()))
-                {
-                    downloadClient.Timeout = System.TimeSpan.FromSeconds(_timeOutSecs);
-
-                    using (HttpResponseMessage res = await downloadClient.GetAsync(downloadUrl))
                     using (Stream streamToReadFrom = await res.Content.ReadAsStreamAsync())
                     {
                         streamToReadFrom.CopyTo(writer);
                     }
-                }
+                //}
             }
 
             return new FileInfo(downloadFile);
