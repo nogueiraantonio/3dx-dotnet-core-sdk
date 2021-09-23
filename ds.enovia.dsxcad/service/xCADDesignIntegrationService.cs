@@ -34,20 +34,58 @@ namespace ds.enovia.dsxcad.service
         private const string DOWNLOAD_TICKET = "/{0}/dsxcad:AuthoringFile/DownloadTicket";
         private const string SEARCH = "/search";
 
+        private const long MAX_VALS_PER_QUERY = 1000;
+
         public xCADDesignIntegrationService(string _enoviaService, IPassportAuthentication passport) : base(_enoviaService, passport)
         {
         }
 
         public abstract string GetBaseResource();
-       
 
-            //Important: Queries must not exceed 4096 characters.
-        protected async Task<T> _Search<T>(SearchQuery _searchString, string _mask, long _skip = 0, long _top = 100) 
+        public async Task<IList<T>> SearchAll<T>(SearchQuery _searchString, string _mask = null, long _top = MAX_VALS_PER_QUERY)
+        {
+            long skip = 0;
+
+            List<ItemSet<T>> searchBookReturn = new List<ItemSet<T>>();
+
+            ItemSet<T> page;
+
+            do
+            {
+                page = await _Search<T>(_searchString, _mask, skip, _top);
+
+                skip += _top;
+
+                //TODO: Add an interval
+
+                searchBookReturn.Add(page);
+            }
+            while ((page != null) && (page.totalItems == _top));
+
+            // Postprocessing
+
+            List<T> __searchOutput = new List<T>();
+
+            foreach (ItemSet<T> itemSet in searchBookReturn)
+            {
+                if (itemSet.totalItems > 0)
+                {
+                    __searchOutput.AddRange(itemSet.member);
+                }
+            }
+
+            return __searchOutput;
+        }
+
+        //Important: Queries must not exceed 4096 characters.
+        protected async Task<ItemSet<T>> _Search<T>(SearchQuery _searchString, string _mask = null, long _skip = 0, long _top = 100) 
         {
             string searchString = _searchString.GetSearchString();
 
             Dictionary<string, string> queryParams = new Dictionary<string, string>();
-            queryParams.Add("$mask", _mask);
+            if (_mask != null)
+                queryParams.Add("$mask", _mask);
+            
             queryParams.Add("$skip", _skip.ToString());
             queryParams.Add("$top", _top.ToString());
             queryParams.Add("$searchStr", searchString);
@@ -62,7 +100,7 @@ namespace ds.enovia.dsxcad.service
                 //throw (new DerivedOutputException(requestResponse));
             }
 
-            return await requestResponse.Content.ReadFromJsonAsync<T>();
+            return await requestResponse.Content.ReadFromJsonAsync<ItemSet<T>>();
         }
         protected async Task<FileDownloadTicket> GetAuthoringFileDownloadTicket(string _baseDownloadUrl, string _id)
         {

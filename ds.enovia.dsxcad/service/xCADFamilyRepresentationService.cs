@@ -22,6 +22,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 using ds.authentication;
+using ds.enovia.common.collection;
 using ds.enovia.common.search;
 using ds.enovia.dsxcad.exception;
 using ds.enovia.dsxcad.model;
@@ -101,9 +102,14 @@ namespace ds.enovia.dsxcad.service
             return __mask;
         }
 
-        public async Task<xCADFamilyRepresentationSet> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADFamilyRepresentationDetails _mask = xCADFamilyRepresentationDetails.Basic)
+        //public async Task<xCADFamilyRepresentationSet> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADFamilyRepresentationDetails _mask = xCADFamilyRepresentationDetails.Basic)
+        //{
+        //    return await _Search<xCADFamilyRepresentationSet>(_searchString, GetMaskString(_mask), _skip, _top);
+        //}
+
+        public async Task<IList<xCADFamilyRepresentation>> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADFamilyRepresentationDetails _mask = xCADFamilyRepresentationDetails.Basic)
         {
-            return await _Search<xCADFamilyRepresentationSet>(_searchString, GetMaskString(_mask), _skip, _top);
+            return await SearchAll<xCADFamilyRepresentation>(_searchString, GetMaskString(_mask), _top);
         }
 
     }
