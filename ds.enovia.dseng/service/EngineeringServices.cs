@@ -40,6 +40,11 @@ namespace ds.enovia.dseng.service
         private const string CONFIGURED = "/dscfg:Configured";
         private const string ENGINEERING_INSTANCES = "/dseng:EngInstance";
         private const string FILTERABLE = "/dscfg:Filterable";
+        
+        // Notes from public documentation
+        // Engineering Web Services 1.3.0 - Gets a list of Engineering Items.
+        // By default, returns a total of up to 50 items, can be optionally increased upto 1000 items using $top query parameter.
+        private const long MAX_VALS_PER_QUERY = 1000;
 
         public string GetBaseResource()
         {
@@ -49,6 +54,38 @@ namespace ds.enovia.dseng.service
         public EngineeringServices (string _enoviaService, IPassportAuthentication passport) : base(_enoviaService, passport)
         {
 
+        }
+
+        // Notes from public documentation
+        // Engineering Web Services 1.3.0 - Gets a list of Engineering Items. By default, returns a total of up to 50 items, can be optionally increased upto 1000 items using $top query parameter.
+        // Recommendation: Use $searchStr query parameter with a minimum of two characters for better performances.
+        public async Task<List<EngineeringSearchPage>> SearchAll(SearchQuery _searchString, EngineeringSearchMask _mask = EngineeringSearchMask.Default, long _top = MAX_VALS_PER_QUERY)
+        {
+            long skip = 0;
+            
+            List<EngineeringSearchPage> __searchBookReturn = new List<EngineeringSearchPage>();
+            
+            EngineeringSearchPage page;
+            
+            do
+            {
+                page = await Search(_searchString, skip, _top, _mask);
+
+                skip += _top;
+
+                //TODO: Add an interval
+
+                __searchBookReturn.Add(page);
+            }
+            while ((page != null) && (page.totalItems == _top));
+
+            //remove the last page if there are more than one pages and the last one is zero
+            if ((__searchBookReturn.Count > 1) && (__searchBookReturn[__searchBookReturn.Count - 1].totalItems == 0))
+            {
+                __searchBookReturn.RemoveAt(__searchBookReturn.Count - 1);
+            }
+
+            return __searchBookReturn;
         }
 
         public async Task<EngineeringSearchPage> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, EngineeringSearchMask _mask = EngineeringSearchMask.Default)
