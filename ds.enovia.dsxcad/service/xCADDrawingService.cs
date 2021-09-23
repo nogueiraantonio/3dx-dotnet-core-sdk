@@ -15,6 +15,7 @@
 //------------------------------------------------------------------------------------------------------------------------------------
 
 using ds.authentication;
+using ds.enovia.common.collection;
 using ds.enovia.common.search;
 using ds.enovia.dsxcad.exception;
 using ds.enovia.dsxcad.model;
@@ -109,9 +110,9 @@ namespace ds.enovia.dsxcad.service
             return __mask;
         }
 
-        public async Task<xCADDrawingSet> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADDrawingDetails _mask = xCADDrawingDetails.Basic) 
+        public async Task<IList<xCADDrawing>> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADDrawingDetails _mask = xCADDrawingDetails.Basic)
         {
-            return await _Search<xCADDrawingSet>(_searchString, GetMaskString(_mask), _skip, _top);
+            return await SearchAll<xCADDrawing>(_searchString, GetMaskString(_mask), _top);
         }
 
         //Modifies the Drawing attributes

@@ -112,9 +112,9 @@ namespace ds.enovia.dsxcad.service
             return __mask;
         }
 
-        public async Task<xCADPartSet> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADPartDetails _mask = xCADPartDetails.Basic)
+        public async Task<IList<xCADPart>> Search(SearchQuery _searchString, long _skip = 0, long _top = 100, xCADPartDetails _mask = xCADPartDetails.Basic)
         {
-            return await _Search<xCADPartSet>(_searchString, GetMaskString(_mask), _skip, _top);
+            return await SearchAll<xCADPart>(_searchString, GetMaskString(_mask), _top);
         }
 
         //Modifies the Drawing attributes
