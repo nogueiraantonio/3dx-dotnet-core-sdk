@@ -16,7 +16,6 @@
 
 using System;
 using System.Windows.Forms;
-using ds.authentication.platform;
 
 namespace ds.authentication.ui.win
 {
