@@ -13,3 +13,6 @@
 ## Samples
 
 work in progress
+
+## Continuous Integration
+with Github Actions
