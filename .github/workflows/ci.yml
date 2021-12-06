@@ -27,10 +27,7 @@ jobs:
     - id: file_changes
       uses: jitterbit/get-changed-files@v1
     - name: List all modified files
-      run: |        
-        for mod_file in ${{ steps.files.outputs.modified }}; do
-          echo "Do something with this ${mod_file}."
-        done
+      run: echo "Do something with this ${{ steps.files.outputs.modified }}."
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
