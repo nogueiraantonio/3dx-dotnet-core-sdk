@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -25,18 +25,21 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       
     - id: file_changes
-      uses: trilom/file-changes-action@v1.2.4
-    - name: Check Modified Files
-      run: echo ${{ steps.file_changes.outputs.files_modified}}
+      uses: tj-actions/changed-files@v11.9
+    - name: List all modified files
+      run: |
+          for file in ${{ steps.file_changes.outputs.all_modified_files }}; do
+            echo "$file was modified"
+          done
       
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains(steps.file_changes.outputs.files_modified, 'ds.authentication/ds.authentication.csproj' )
+      if: contains(steps.file_changes.outputs.modified_files, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
-      if: contains(steps.file_changes.outputs.files_modified, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
+      if: contains(steps.file_changes.outputs.modified_files, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
       run: dotnet build ds.delmia.mfg/ds.delmia.mfg.csproj --configuration Release
-      if: contains(steps.file_changes.outputs.files_modified, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
+      if: contains(steps.file_changes.outputs.modified_files, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
