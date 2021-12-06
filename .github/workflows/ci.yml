@@ -28,8 +28,8 @@ jobs:
       uses: jitterbit/get-changed-files@v1
     - name: List all modified files
       run: |        
-        for modified_file in ${{  steps.files.outputs.modified }}; do
-          echo "Do something with this ${modified_file}."
+        for mod_file in ${{ steps.files.outputs.modified }}; do
+          echo "Do something with this ${mod_file}."
         done
         
     - name: Run Authentication Library
