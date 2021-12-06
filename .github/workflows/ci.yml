@@ -31,12 +31,12 @@ jobs:
       
     - name: Run Authentication  
       run: Build ds.authentication.dll
-      if: contains(steps.file_changes.outputs.files_modified, "ds.authentication/ds.authentication.csproj" )
+      if: contains(steps.file_changes.outputs.files_modified, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: Build ds.authentication.ui.win.dll
-      if: contains(steps.file_changes.outputs.files_modified, "ds.authentication.ui.win/ds.authentication.ui.win.csproj" )
+      if: contains(steps.file_changes.outputs.files_modified, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
       run: Build ds.delmia.mfg.dll
-      if: contains(steps.file_changes.outputs.files_modified, "ds.delmia.mfg/ds.delmia.mfg.csproj" ) 
+      if: contains(steps.file_changes.outputs.files_modified, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
