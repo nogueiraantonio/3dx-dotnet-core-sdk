@@ -31,7 +31,7 @@ jobs:
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains ( ${{ steps.file_changes.outputs.modified }}, "ds.authentication/ds.authentication.csproj" )
+      if: contains ( steps.file_changes.outputs.modified , 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
