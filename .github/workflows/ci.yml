@@ -27,16 +27,16 @@ jobs:
     - id: file_changes
       uses: jitterbit/get-changed-files@v1
     - name: List all modified files
-      run: echo "Do something with this ${{ steps.files.outputs.modified }}."
+      run: echo "Do something with this ${{ steps.file_changes.outputs.modified }}."
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains( ${{  steps.files.outputs.modified }}, 'ds.authentication/ds.authentication.csproj' )
+      if: contains( ${{  steps.file_changes.outputs.modified }}, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
-      if: contains(( ${{  steps.files.outputs.modified }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
+      if: contains(( ${{  steps.file_changes.outputs.modified }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
       run: dotnet build ds.delmia.mfg/ds.delmia.mfg.csproj --configuration Release
-      if: contains( ${{  steps.files.outputs.modified }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
+      if: contains( ${{  steps.file_changes.outputs.modified }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
