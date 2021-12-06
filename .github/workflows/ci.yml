@@ -25,14 +25,18 @@ jobs:
       run: dotnet test --no-build --verbosity normal
       
     - id: file_changes
-      uses: trilom/file-changes-action@v1.2.3
-    - name: test
-      run: |
-          cat $HOME/files.json
-          cat $HOME/files_modified.json
-          cat $HOME/files_added.json
-          cat $HOME/files_removed.json
-          echo '${{ steps.file_changes.outputs.files}}'
-          echo '${{ steps.file_changes.outputs.files_modified}}'
-          echo '${{ steps.file_changes.outputs.files_added}}'
-          echo '${{ steps.file_changes.outputs.files_removed}}'
+      uses: trilom/file-changes-action@v1.2.4
+    - name: Check Modified Files
+      run: echo ${{ steps.file_changes.outputs.files_modified}}
+      
+    - name: Run Authentication  
+      run: Build ds.authentication.dll
+      if: contains(steps.file_changes.outputs.files_modified, "ds.authentication/ds.authentication.csproj" )
+      
+    - name: Run Authentication UI  
+      run: Build ds.authentication.ui.win.dll
+      if: contains(steps.file_changes.outputs.files_modified, "ds.authentication.ui.win/ds.authentication.ui.win.csproj" )
+    
+    - name: Run DS Delmia MFG  
+      run: Build ds.delmia.mfg.dll
+      if: contains(steps.file_changes.outputs.files_modified, "ds.delmia.mfg/ds.delmia.mfg.csproj" ) 
