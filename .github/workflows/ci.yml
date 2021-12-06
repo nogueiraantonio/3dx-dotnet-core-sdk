@@ -34,7 +34,7 @@ jobs:
     - name: List all modified files
       run: |
         readarray -t ${{ env.modified_files }} <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.modified }}')"
-        for modified_file in ${{ env.modified_files[@] }}; do
+        for modified_file in ${{ env.modified_files }}; do
           echo "Do something with this ${modified_file}."
         done
         
