@@ -31,12 +31,12 @@ jobs:
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains( ${{  steps.file_changes.outputs.modified }}, 'ds.authentication/ds.authentication.csproj' )
+      if: contains( ${{ steps.file_changes.outputs.modified }}, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
-      if: contains(( ${{  steps.file_changes.outputs.modified }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
+      if: contains(( ${{ steps.file_changes.outputs.modified }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
-      run: dotnet build ds.delmia.mfg/ds.delmia.mfg.csproj --configuration Release
-      if: contains( ${{  steps.file_changes.outputs.modified }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
+      run: dotnet build ds.delmia.dsmfg/ds.delmia.dsmfg.csproj --configuration Release
+      if: contains( ${{ steps.file_changes.outputs.modified }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
