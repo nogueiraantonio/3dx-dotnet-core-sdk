@@ -1,5 +1,5 @@
-name: .NET
-
+name: Build 3DX .NET Core SDK Solution
+  
 on:
   push:
     branches: [ main ]
@@ -37,12 +37,12 @@ jobs:
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains($modified_files, 'ds.authentication/ds.authentication.csproj' )
+      if: contains(${modified_files}, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
-      if: contains($modified_files, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
+      if: contains(${modified_files}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
       run: dotnet build ds.delmia.mfg/ds.delmia.mfg.csproj --configuration Release
-      if: contains($modified_files, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
+      if: contains(${modified_files}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
