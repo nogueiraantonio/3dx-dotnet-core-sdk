@@ -1,7 +1,4 @@
 name: Build 3DX .NET Core SDK Solution
-
-env:
-  modified_files: ''
   
 on:
   push:
@@ -19,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 3.1.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -29,23 +26,20 @@ jobs:
       
     - id: file_changes
       uses: jitterbit/get-changed-files@v1
-      with:
-        format: 'json'
     - name: List all modified files
-      run: |
-        readarray -t ${{ env.modified_files }} <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.modified }}')"
-        for modified_file in ${{ env.modified_files }}; do
+      run: |        
+        for modified_file in ${{  steps.files.outputs.modified }}; do
           echo "Do something with this ${modified_file}."
         done
         
     - name: Run Authentication Library
       run: dotnet build ds.authentication/ds.authentication.csproj --configuration Release
-      if: contains(${{ env.modified_files }}, 'ds.authentication/ds.authentication.csproj' )
+      if: contains( ${{  steps.files.outputs.modified }}, 'ds.authentication/ds.authentication.csproj' )
       
     - name: Run Authentication UI  
       run: dotnet build ds.authentication.ui.win/ds.authentication.ui.win.csproj --configuration Release
-      if: contains((${{ env.modified_files }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
+      if: contains(( ${{  steps.files.outputs.modified }}, 'ds.authentication.ui.win/ds.authentication.ui.win.csproj' )
     
     - name: Run DS Delmia MFG  
       run: dotnet build ds.delmia.mfg/ds.delmia.mfg.csproj --configuration Release
-      if: contains(${{ env.modified_files }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
+      if: contains( ${{  steps.files.outputs.modified }}, 'ds.delmia.mfg/ds.delmia.mfg.csproj' ) 
